@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-PT">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Admin — SaborFest</title><link rel="stylesheet" href="styles.css"/></head>
+<body class="elegant">
+<main class="container">
+  <h2>Painel Admin — SaborFest</h2>
+  <p class="small muted">Ver reservas locais, validar comprovativos e gerar QR para envio.</p>
+  <div id="list"></div>
+  <hr/>
+  <button id="exportBtn" class="btn">Exportar JSON</button>
+  <pre id="exportBox" class="card small hidden"></pre>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<script>
+function currency(v){return '€' + Number(v).toFixed(2);}
+function load(){ const list=document.getElementById('list'); list.innerHTML=''; const arr=JSON.parse(localStorage.getItem('saborfest_reservas')||'[]'); if(arr.length===0){ list.innerHTML='<div class="card small muted">Sem reservas</div>'; return; } arr.forEach((r,i)=>{ const div=document.createElement('div'); div.className='card list-item'; div.innerHTML = `<div><strong>${r.ref}</strong> — ${r.name}<div class='small muted'>${r.item} • ${currency(r.total)} • ${r.status||'pending'}</div></div>`; const right=document.createElement('div'); const btnView=document.createElement('button'); btnView.className='btn-outline'; btnView.textContent='Ver'; btnView.onclick = ()=> alert(JSON.stringify(r, null, 2)); const btnMark=document.createElement('button'); btnMark.className='btn'; btnMark.textContent = r.status==='paid' ? 'Pago' : 'Marcar Pago'; btnMark.onclick = async ()=>{ if(r.status==='paid'){ alert('Já pago'); return; } const qrText = r.ref + '|' + btoa(r.email).slice(0,8); const qrData = await QRCode.toDataURL(qrText, {width:300}); r.qr = qrData; r.status='paid'; r.paidAt = new Date().toISOString(); const arr2 = JSON.parse(localStorage.getItem('saborfest_reservas')||'[]'); arr2[i]=r; localStorage.setItem('saborfest_reservas', JSON.stringify(arr2)); load(); if(confirm('Bilhete marcado como pago. Deseja abrir o email para enviar o QR?')){ const subject = encodeURIComponent('Bilhete SaborFest ' + r.ref); const body = encodeURIComponent('Olá ' + r.name + '\n\nSegue o bilhete em anexo (imagem).\nReferência: ' + r.ref); window.open('mailto:' + encodeURIComponent(r.email) + '?subject='+subject+'&body='+body); } }; const btnDel=document.createElement('button'); btnDel.className='btn-outline'; btnDel.textContent='Eliminar'; btnDel.onclick = ()=>{ if(confirm('Eliminar reserva?')){ const arr3 = JSON.parse(localStorage.getItem('saborfest_reservas')||'[]'); arr3.splice(i,1); localStorage.setItem('saborfest_reservas', JSON.stringify(arr3)); load(); } }; right.appendChild(btnView); right.appendChild(btnMark); right.appendChild(btnDel); div.appendChild(right); list.appendChild(div); }); }
+document.getElementById('exportBtn').addEventListener('click', ()=>{ const arr=JSON.parse(localStorage.getItem('saborfest_reservas')||'[]'); document.getElementById('exportBox').textContent = JSON.stringify(arr, null, 2); document.getElementById('exportBox').classList.remove('hidden'); });
+load();
+</script>
+</body>
+</html>
