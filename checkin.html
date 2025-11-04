@@ -1,30 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-PT">
-<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Check-in — SaborFest</title><link rel="stylesheet" href="styles.css"/></head>
-<body class="elegant">
-<main class="container">
-  <h2>Check-in / Validação</h2>
-  <p class="small muted">Cole o código do QR ou abra a câmara para escanear.</p>
-  <div class="card">
-    <input id="qrInput" placeholder="Cole o conteúdo do QR aqui" style="width:100%;padding:10px;border-radius:8px;margin-top:8px"/>
-    <div style="margin-top:8px"><button id="validateBtn" class="btn">Validar</button></div>
-    <div id="result" class="card small hidden" style="margin-top:12px"></div>
-  </div>
-  <hr/>
-  <h3>Scanner</h3>
-  <video id="video" class="card" style="width:100%;height:auto;display:none"></video>
-  <div style="margin-top:8px"><button id="startCam" class="btn">Abrir Câmara</button> <button id="stopCam" class="btn-outline">Fechar Câmara</button></div>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-<script>
-function showResult(text, ok){ const el=document.getElementById('result'); el.classList.remove('hidden'); el.style.borderLeft = ok ? '4px solid #2aff7b' : '4px solid #ff6b6b'; el.innerHTML = `<strong>${ok? 'VÁLIDO':'INVÁLIDO'}</strong><div class='small muted' style='margin-top:6px'>${text}</div>`; }
-function verifyCode(qr){ const parts = qr.split('|'); const ref = parts[0]; const arr = JSON.parse(localStorage.getItem('saborfest_reservas')||'[]'); const order = arr.find(o=>o.ref===ref); if(!order) return {ok:false, reason:'Bilhete não encontrado'}; if(order.status!=='paid') return {ok:false, reason:'Pagamento não confirmado'}; if(order.used) return {ok:false, reason:'Bilhete já usado'}; order.used = true; order.usedAt = new Date().toISOString(); localStorage.setItem('saborfest_reservas', JSON.stringify(arr)); return {ok:true, name:order.name, item:order.item, ref:order.ref}; }
-document.getElementById('validateBtn').addEventListener('click', ()=>{ const val=document.getElementById('qrInput').value.trim(); if(!val){ alert('Cole o código do QR.'); return;} const res = verifyCode(val); if(res.ok) showResult('Acesso permitido — ' + res.name + ' • ' + res.item, true); else showResult(res.reason, false); });
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check-in | SaborFest</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="hero" style="height: 50vh;">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1 class="title">Check-in</h1>
+      <p class="subtitle">Validação de QR Codes</p>
+    </div>
+  </header>
 
-let stream=null; const video=document.getElementById('video');
-document.getElementById('startCam').addEventListener('click', async ()=>{ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){ try{ stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); video.srcObject = stream; video.play(); video.style.display='block'; tick(); }catch(e){ alert('Erro ao abrir câmara: '+e); } } else alert('Câmara não suportada'); });
-document.getElementById('stopCam').addEventListener('click', ()=>{ if(stream){ stream.getTracks().forEach(t=>t.stop()); video.style.display='none'; } });
-function tick(){ if(video.readyState===video.HAVE_ENOUGH_DATA){ const canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight; const ctx=canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height); const imgd=ctx.getImageData(0,0,canvas.width,canvas.height); const code = jsQR(imgd.data, imgd.width, imgd.height); if(code){ const res = verifyCode(code.data); if(res.ok) showResult('Acesso permitido — ' + res.name + ' • ' + res.item, true); else showResult(res.reason, false); stream.getTracks().forEach(t=>t.stop()); video.style.display='none'; return; } } requestAnimationFrame(tick); }
-</script>
+  <main class="tickets-section">
+    <h2>Valide o bilhete do participante</h2>
+
+    <div class="ticket">
+      <label for="codigoQR">Introduza o código do bilhete:</label><br>
+      <input type="text" id="codigoQR" placeholder="Ex: SABORFEST-JOAO-PEDRO-CAMAROTE1" style="width:90%;padding:10px;margin:15px 0;border-radius:8px;border:none;">
+      <button class="buy-button" onclick="validarQRCode()">Validar</button>
+      <p id="resultado" style="margin-top:15px;font-weight:bold;"></p>
+    </div>
+
+    <div class="ticket">
+      <h3>Como funciona</h3>
+      <p>Os códigos válidos começam com <strong>SABORFEST-</strong>.</p>
+      <p>Exemplo: <code>SABORFEST-JOAO-PEDRO-CAMAROTE1</code></p>
+      <p>Se o código for válido, o sistema mostrará “✅ Bilhete válido! Entrada autorizada.”</p>
+      <p>Se não for válido, mostrará “❌ Código inválido!”.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 SaborFest. Todos os direitos reservados.</p>
+  </footer>
 </body>
 </html>
