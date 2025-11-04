@@ -1,44 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SaborFest — Império Club</title>
-<link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SaborFest | 15 Novembro | Alverca do Ribatejo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body class="elegant">
-<header class="hero">
-  <div class="overlay">
-    <h1>SaborFest</h1>
-    <p class="meta">15 de Novembro • 22:00 — 04:00</p>
-    <p class="meta small">Império Club — Alverca do Ribatejo, Lisboa</p>
-    <a class="cta" href="payment.html">Pagar agora</a>
-  </div>
-</header>
+<body>
+  <header class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1 class="title">SaborFest</h1>
+      <p class="subtitle">🎉 A festa mais esperada de Alverca! Música, sabor e diversão até o amanhecer.</p>
+      <p class="details">15 de Novembro • 22h00 — 04h00<br>Império Club — Alverca do Ribatejo, Lisboa</p>
+      <a href="#bilhetes" class="cta-button">Comprar Bilhete</a>
+    </div>
+  </header>
 
-<main class="container">
-  <section class="card">
-    <h2>Ingressos</h2>
-    <ul class="ing-list">
-      <li><strong>Pista</strong> — Homem €10 / Mulher €5 — 2 imperiais incluídas</li>
-      <li><strong>VIP</strong> — Homem €10 / Mulher €5 — 2 imperiais incluídas</li>
-      <li><strong>Camarote 1</strong> — €600 (10 pessoas) — 1 gin + água tónica + 10 energéticos</li>
-      <li><strong>Camarote 2 / 3</strong> — €350 — Gin, água, água tónica, 1 whiskey, 4 energéticos</li>
-      <li><strong>Camarote 4 / 5</strong> — €300 — Gin, água, água tónica ou 1 whiskey + 3 energéticos</li>
-    </ul>
-  </section>
+  <main>
+    <section id="bilhetes" class="tickets-section">
+      <h2>Ingressos Disponíveis</h2>
 
-  <section class="card small">
-    <h3>Pagamento</h3>
-    <p>Pagamento exclusivo por transferência bancária. Clique em <strong>Pagar agora</strong> para abrir a página de pagamento com as instruções.</p>
-  </section>
+      <div class="ticket">
+        <h3>Pista</h3>
+        <p>🎟️ Homem: <strong>10€</strong> | Mulher: <strong>5€</strong></p>
+        <p>Inclui 2 imperiais 🍺</p>
+        <a href="payment.html?tipo=pista" class="buy-button">Comprar</a>
+      </div>
 
-  <section class="card small">
-    <h3>Contacto</h3>
-    <p>Email: <a href="mailto:sabordealvercafest@gmail.com">sabordealvercafest@gmail.com</a></p>
-  </section>
-</main>
+      <div class="ticket">
+        <h3>Camarote 1</h3>
+        <p><strong>600€</strong> (10 pessoas)</p>
+        <p>1 Gin + Água Tónica + 10 Energéticos</p>
+        <a href="payment.html?tipo=camarote1" class="buy-button">Reservar</a>
+      </div>
 
-<footer class="footer small">SaborFest • Império Club • 15 de Novembro</footer>
-</body>
-</html>
+      <div class="ticket">
+        <h3>Camarotes 2 e 3</h3>
+        <p><strong
+
