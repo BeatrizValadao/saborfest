@@ -1,113 +1,65 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Pagamento — SaborFest</title>
-<link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento | SaborFest</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
-<body class="elegant">
-<main class="container">
-  <section class="card payment-card">
-    <h1>SaborFest — Pagamento</h1>
-    <p class="muted">Insira os dados e gere a referência única. Faça a transferência para o IBAN indicado.</p>
+<body>
+  <header class="hero" style="height: 50vh;">
+    <div class="overlay"></div>
+    <div class="hero-content">
+      <h1 class="title">Pagamento</h1>
+      <p class="subtitle">Finalize a sua reserva para o <strong>SaborFest</strong></p>
+    </div>
+  </header>
 
-    <form id="payForm" class="form-grid">
-      <label>Item
-        <select id="item">
-          <option value="pista">Pista</option>
-          <option value="vip">VIP</option>
-          <option value="cam1">Camarote 1 (600€)</option>
-          <option value="cam2">Camarote 2 (350€)</option>
-          <option value="cam3">Camarote 3 (350€)</option>
-          <option value="cam4">Camarote 4 (300€)</option>
-          <option value="cam5">Camarote 5 (300€)</option>
-        </select>
-      </label>
+  <main class="tickets-section">
+    <h2>Detalhes do Pagamento</h2>
 
-      <label>Género
-        <select id="gender"><option value="male">Homem</option><option value="female">Mulher</option></select>
-      </label>
+    <form id="formPagamento" class="payment-form">
+      <label for="nome">Nome completo:</label>
+      <input type="text" id="nome" placeholder="O seu nome" required>
 
-      <label>Quantidade<input id="qty" type="number" min="1" value="1"/></label>
-      <label>Nome completo<input id="name" required/></label>
-      <label>Email<input id="email" type="email" required/></label>
-      <label>Telefone (opcional)<input id="phone"/></label>
+      <label for="email">Email:</label>
+      <input type="email" id="email" placeholder="O seu email" required>
 
-      <div class="total-line">Valor total: <strong id="total">€0.00</strong></div>
+      <label for="tipo">Tipo de bilhete:</label>
+      <select id="tipo" required>
+        <option value="">Selecione...</option>
+        <option value="pista">Pista</option>
+        <option value="camarote1">Camarote 1</option>
+        <option value="camarote2">Camarote 2</option>
+        <option value="camarote3">Camarote 3</option>
+        <option value="camarote4">Camarote 4</option>
+        <option value="camarote5">Camarote 5</option>
+      </select>
 
-      <div class="bank-steps">
-        <h3>Instruções de transferência</h3>
-        <div class="line"><div class="label">IBAN</div><div class="value"><input id="iban" class="copy" value="PT50 0010 0000 62371240001 37" readonly></div></div>
-        <div class="line"><div class="label">Titular</div><div class="value">CHOUPALVERCA - CHARCUTARIA CAFÉ, LDA</div></div>
-        <div class="line"><div class="label">Referência</div><div class="value"><input id="ref" class="copy" readonly></div></div>
-      </div>
+      <label for="comprovativo">Anexar comprovativo (PDF, JPG, PNG):</label>
+      <input type="file" id="comprovativo" accept=".pdf,.jpg,.jpeg,.png" required>
 
-      <div class="actions">
-        <button type="button" id="genRef" class="btn">Gerar referência & Mostrar instruções</button>
-        <button type="button" id="copyAll" class="btn-outline">Copiar IBAN + Referência</button>
-      </div>
+      <h3 class="iban-title">💳 Transferência bancária</h3>
+      <p>
+        <strong>IBAN:</strong> PT50 0010 0000 62371240001 37<br>
+        <strong>Titular:</strong> CHOUPALVERCA - CHARCUTARIA CAFÉ, LDA<br>
+        <strong>Email para envio do comprovativo:</strong> 
+        <a href="mailto:sabordealvercafest@gmail.com">sabordealvercafest@gmail.com</a>
+      </p>
 
-      <div class="proof-upload small muted">
-        <p>Depois de fazer a transferência, envie o comprovativo (screenshot) através do botão abaixo — será enviado por email ao organizador.</p>
-        <input type="file" id="proofFile" accept="image/*"/>
-        <button type="button" id="sendProof" class="btn">Enviar comprovativo</button>
-      </div>
+      <p class="info">Após o envio e confirmação do pagamento, receberá um QR Code no seu e-mail para apresentação à entrada do evento.</p>
 
-      <div id="status" class="small muted"></div>
+      <button type="submit" class="buy-button">Confirmar Pagamento</button>
     </form>
-  </section>
-</main>
 
-<script>
-const PRICES = { pista:{male:10,female:5}, vip:{male:10,female:5}, cam1:600,cam2:350,cam3:350,cam4:300,cam5:300 };
-function currency(v){ return '€' + Number(v).toFixed(2); }
-function genRef(){ return 'SF-' + Date.now().toString(36).toUpperCase().slice(-6); }
+    <!-- ⚠️ Dica:
+    Se um camarote estiver ESGOTADO, pode removê-lo da lista acima (linhas <option value="camaroteX">...</option>).
+    Basta fazer commit e o site será atualizado automaticamente. -->
+  </main>
 
-const itemEl = document.getElementById('item'), genderEl=document.getElementById('gender'), qtyEl=document.getElementById('qty');
-const totalEl=document.getElementById('total'), refInput=document.getElementById('ref');
-const nameEl=document.getElementById('name'), emailEl=document.getElementById('email'), phoneEl=document.getElementById('phone');
-const genBtn=document.getElementById('genRef'), copyBtn=document.getElementById('copyAll'), sendProofBtn=document.getElementById('sendProof');
-const proofFile=document.getElementById('proofFile'), statusEl=document.getElementById('status');
-
-function calcTotal(){ const item = itemEl.value; if(item.startsWith('cam')) return PRICES[item]||0; const t=PRICES[item]||PRICES.pista; return (t[genderEl.value]||t['male']) * (Number(qtyEl.value)||1); }
-function updateTotal(){ totalEl.textContent = currency(calcTotal()); }
-[itemEl,genderEl,qtyEl].forEach(el=>el.addEventListener('change', updateTotal)); updateTotal();
-
-genBtn.addEventListener('click', ()=>{
-  if(!nameEl.value || !emailEl.value){ alert('Preencha nome e email'); return; }
-  const ref = genRef(); refInput.value = ref;
-  statusEl.textContent = `Reserva criada. Referência: ${ref}. Faça a transferência e depois envie o comprovativo.`;
-  // store local reservation for admin to pick up
-  const arr=JSON.parse(localStorage.getItem('saborfest_reservas')||'[]');
-  const newRes = { ref, name:nameEl.value, email:emailEl.value, phone:phoneEl.value, item:itemEl.value, qty:Number(qtyEl.value)||1, total:calcTotal(), status:'pending', createdAt:new Date().toISOString() };
-  arr.unshift(newRes); localStorage.setItem('saborfest_reservas', JSON.stringify(arr));
-  alert('Referência gerada — copie os dados e faça a transferência.');
-});
-
-copyBtn.addEventListener('click', async ()=>{
-  const iban = document.getElementById('iban').value;
-  const ref = refInput.value || '(gere referência primeiro)';
-  const text = `IBAN: ${iban}\nTitular: CHOUPALVERCA - CHARCUTARIA CAFÉ, LDA\nReferência: ${ref}`;
-  try{ await navigator.clipboard.writeText(text); alert('IBAN e referência copiados.'); }catch(e){ alert('Não foi possível copiar automaticamente. Seleccione e copie manualmente.'); }
-});
-
-sendProofBtn.addEventListener('click', ()=>{
-  const f = proofFile.files[0]; if(!f){ alert('Escolha um ficheiro de comprovativo.'); return; }
-  const reader = new FileReader(); reader.onload = function(){
-    const data = reader.result;
-    // save to localStorage and email sending (mailto) helper
-    const ref = refInput.value || '';
-    const arr = JSON.parse(localStorage.getItem('saborfest_proofs')||'[]');
-    arr.unshift({ ref, data, createdAt:new Date().toISOString(), name:nameEl.value, email:emailEl.value });
-    localStorage.setItem('saborfest_proofs', JSON.stringify(arr));
-    // open mailto with attachment is not possible; so provide instructions and open mail composer
-    const subject = encodeURIComponent('Comprovativo pagamento ' + ref);
-    const body = encodeURIComponent('Olá,\n\nEnvio em anexo o comprovativo do pagamento para a referência ' + ref + '\n\nNome: ' + nameEl.value + '\nEmail: ' + emailEl.value + '\n\nObrigado.');
-    window.location.href = 'mailto:sabordealvercafest@gmail.com?subject=' + subject + '&body=' + body;
-    statusEl.textContent = 'Comprovativo preparado e janela de email aberta. Envie o email com o comprovativo em anexo.';
-  }; reader.readAsDataURL(f);
-});
-</script>
+  <footer>
+    <p>© 2025 SaborFest. Todos os direitos reservados.</p>
+  </footer>
 </body>
 </html>
